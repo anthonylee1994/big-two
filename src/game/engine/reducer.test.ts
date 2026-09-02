@@ -18,6 +18,9 @@ function handsWithControl(overrides: Partial<Record<number, string[]>>): ReturnT
     const used = new Set<string>();
     const hands: Card[][] = [[], [], [], []];
     for (const [seat, ids] of Object.entries(overrides)) {
+        if (!ids) {
+            continue;
+        }
         const unique = new Set(ids);
         if (unique.size !== ids.length) {
             throw new Error(`Duplicate cards in seat ${seat}`);
@@ -49,9 +52,10 @@ describe("opening and turns", () => {
             0: ["D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10", "DJ", "DQ", "DK", "DA", "C3"],
         });
         expect(state.currentPlayerSeat).toBe(0);
-        expect(tryPlay(state, 0, ["D4"]).ok).toBe(false);
-        if (!tryPlay(state, 0, ["D4"]).ok) {
-            expect(tryPlay(state, 0, ["D4"]).error.code).toBe("mustIncludeDiamond3");
+        const rejected = tryPlay(state, 0, ["D4"]);
+        expect(rejected.ok).toBe(false);
+        if (!rejected.ok) {
+            expect(rejected.error.code).toBe("mustIncludeDiamond3");
         }
         const opened = play(state, 0, ["D3"]);
         expect(opened.mustIncludeDiamond3).toBe(false);

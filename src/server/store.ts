@@ -58,7 +58,12 @@ export class UpstashStore implements DurableStore {
     }
 }
 
-export function createStoreFromEnv(env: Record<string, string | undefined> = process.env): DurableStore {
+function readProcessEnv(): Record<string, string | undefined> {
+    const scope = globalThis as {process?: {env?: Record<string, string | undefined>}};
+    return scope.process?.env ?? {};
+}
+
+export function createStoreFromEnv(env: Record<string, string | undefined> = readProcessEnv()): DurableStore {
     const url = env.UPSTASH_REDIS_REST_URL;
     const token = env.UPSTASH_REDIS_REST_TOKEN;
     if (url && token) {
