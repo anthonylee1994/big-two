@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <rect width="64" height="64" rx="12" fill="#0c3328"/>
-    <text x="32" y="42" text-anchor="middle" font-size="32" fill="#e4c36a" font-family="Georgia, serif">鋤</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="鋤大 D">
+    <rect x="1.45" y="1.45" width="61.1" height="61.1" rx="15.4" fill="#ffc93c" stroke="#0a2a1c" stroke-width="2.9" />
+    <path
+        transform="translate(14.08 14.08) scale(0.3584)"
+        fill="#0a2a1c"
+        d="M50 2 C42 18 20 38 8 56 C-2 74 16 88 34 80 C42 76 45 72 46 68 C45 80 40 90 30 96 L70 96 C60 90 55 80 54 68 C55 72 58 76 66 80 C84 88 102 74 92 56 C80 38 58 18 50 2 Z"
+    />
 </svg>
