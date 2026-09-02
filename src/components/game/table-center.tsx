@@ -6,7 +6,7 @@ import {PlayingCard} from "../playing-card.tsx";
 export const TableCenter = React.memo((props: {round: number; turnLabel: string; myTurn: boolean; lastPlay: Combination | null; hintLabel: string}) => {
     return (
         <section className="table-center felt flex min-h-0 flex-col items-center justify-center gap-2 overflow-hidden px-4 py-4 sm:gap-3 sm:px-6">
-            <p className="table-round text-felt-950 text-[1rem] font-black tracking-[0.3em] uppercase">第 {props.round} 局</p>
+            <p className="table-round text-felt-950 text-sm font-black tracking-[0.3em] uppercase sm:text-lg">第 {props.round} 局</p>
 
             <p
                 className={`turn-pill border-felt-950 rounded-full border-3 px-4 py-1.5 text-sm font-black ${
@@ -33,7 +33,7 @@ export const TableCenter = React.memo((props: {round: number; turnLabel: string;
                 )}
             </div>
 
-            <p className="text-felt-950 text-md text-center font-black sm:text-lg">{props.lastPlay ? KIND_NAMES[props.lastPlay.kind] : props.hintLabel}</p>
+            <p className="text-felt-950 text-center text-sm font-black sm:text-lg">{props.lastPlay ? KIND_NAMES[props.lastPlay.kind] : props.hintLabel}</p>
         </section>
     );
 });
