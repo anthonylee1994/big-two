@@ -42,7 +42,7 @@ export const ResultsScreen = React.memo(() => {
         <AppShell title={`第 ${snapshot.round} 局結果`} onBack={leaveSession} width="lg" footer={footer}>
             <div className="space-y-6">
                 <Panel className="text-center">
-                    <span className="border-felt-950 bg-gold-500 text-felt-950 animate-bob mx-auto mb-3 flex size-18 items-center justify-center rounded-3xl border-3 text-3xl shadow-[0_5px_0_var(--color-felt-950)]">
+                    <span className="border-felt-950 bg-gold-500 text-felt-950 animate-bob shadow-chunky mx-auto mb-3 flex size-18 items-center justify-center rounded-3xl border-3 text-3xl">
                         {snapshot.dragonWin ? <FaDragon aria-hidden="true" /> : <FaTrophy aria-hidden="true" />}
                     </span>
                     {snapshot.dragonWin ? <p className="text-gold-500 text-xs font-black tracking-[0.35em] uppercase">一條龍</p> : null}
