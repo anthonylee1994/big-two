@@ -1,11 +1,10 @@
-import {DIAMOND_3_ID, SPADE_2_ID, sortCards} from "../domain/cards.ts";
+import {DIAMOND_3_ID, sortCards} from "../domain/cards.ts";
 import {beats, enumerateCombinations, identifyCombination} from "../domain/combination.ts";
 import type {Card, Combination, GameState, Seat} from "../domain/types.ts";
 
 export interface PlayContext {
     lastPlay: Combination | null;
     mustIncludeDiamond3: boolean;
-    handSize: number;
 }
 
 export function hasDragon(hand: Card[]): boolean {
@@ -29,15 +28,8 @@ export function cardsFromIds(hand: Card[], cardIds: string[]): Card[] | null {
     return cards;
 }
 
-export function isSpadeTwoLastSingle(combination: Combination, handSize: number): boolean {
-    return combination.kind === "single" && combination.cards[0].id === SPADE_2_ID && handSize === 1;
-}
-
 export function isLegalPlay(combination: Combination, ctx: PlayContext): boolean {
     if (ctx.mustIncludeDiamond3 && !combination.cards.some(card => card.id === DIAMOND_3_ID)) {
-        return false;
-    }
-    if (isSpadeTwoLastSingle(combination, ctx.handSize)) {
         return false;
     }
     if (ctx.lastPlay && !beats(combination, ctx.lastPlay)) {
@@ -50,11 +42,10 @@ export function listLegalPlays(hand: Card[], ctx: PlayContext): Combination[] {
     return enumerateCombinations(hand).filter(combination => isLegalPlay(combination, ctx));
 }
 
-export function playContextFor(state: GameState, seat: Seat): PlayContext {
+export function playContextFor(state: GameState, _seat: Seat): PlayContext {
     return {
         lastPlay: state.lastPlay,
         mustIncludeDiamond3: state.mustIncludeDiamond3,
-        handSize: state.hands[seat].length,
     };
 }
 

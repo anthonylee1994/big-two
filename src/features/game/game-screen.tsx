@@ -83,7 +83,6 @@ export const GameScreen = React.memo(() => {
     const playContext = {
         lastPlay: snapshot.lastPlay,
         mustIncludeDiamond3: snapshot.mustIncludeDiamond3,
-        handSize: snapshot.ownHand.length,
     };
     const legal = Boolean(combination && isLegalPlay(combination, playContext));
     const hasAnyLegal = listLegalPlays(snapshot.ownHand, playContext).length > 0;

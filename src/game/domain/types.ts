@@ -91,8 +91,7 @@ export type GameAction =
     | {type: "pass"; playerId: string; commandId: string; revision: number}
     | {type: "startRound"; playerId: string; commandId: string; revision: number; seed: string};
 
-export type EngineErrorCode =
-    "notYourTurn" | "staleRevision" | "illegalPlay" | "duplicateCommand" | "invalidPhase" | "mustIncludeDiamond3" | "spadeTwoLastSingle" | "mustPlay" | "unknownPlayer" | "invalidCards";
+export type EngineErrorCode = "notYourTurn" | "staleRevision" | "illegalPlay" | "duplicateCommand" | "invalidPhase" | "mustIncludeDiamond3" | "mustPlay" | "unknownPlayer" | "invalidCards";
 
 export interface EngineError {
     code: EngineErrorCode;

@@ -60,7 +60,6 @@ export function chooseAction(input: AiInput): AiDecision {
     const ctx = {
         lastPlay: snapshot.lastPlay,
         mustIncludeDiamond3: snapshot.mustIncludeDiamond3 && snapshot.currentPlayerSeat === snapshot.ownSeat,
-        handSize: hand.length,
     };
     const legal = listLegalPlays(hand, ctx);
     if (legal.length === 0) {
@@ -106,7 +105,6 @@ export function isPlayStillLegal(hand: Card[], cardIds: string[], snapshot: Publ
     return isLegalPlay(combination, {
         lastPlay: snapshot.lastPlay,
         mustIncludeDiamond3: snapshot.mustIncludeDiamond3,
-        handSize: hand.length,
     });
 }
 

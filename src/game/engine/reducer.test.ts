@@ -136,7 +136,7 @@ describe("special rules", () => {
         expect(state.players.map(player => player.score)).toEqual([0, 39, 39, 39]);
     });
 
-    test("cannot finish with a single spade 2", () => {
+    test("can finish with a single spade 2", () => {
         const state = handsWithControl({
             0: ["D3", "S2", "D5", "D6", "D7", "D8", "D9", "D10", "DJ", "DQ", "DK", "DA", "H5"],
         });
@@ -153,11 +153,10 @@ describe("special rules", () => {
             next = pass(next, 1);
         }
         expect(next.hands[0].map(card => card.id)).toEqual(["S2"]);
-        const result = tryPlay(next, 0, ["S2"]);
-        expect(result.ok).toBe(false);
-        if (!result.ok) {
-            expect(result.error.code).toBe("spadeTwoLastSingle");
-        }
+        next = play(next, 0, ["S2"]);
+        expect(next.phase).toBe("roundEnded");
+        expect(next.winnerSeat).toBe(0);
+        expect(next.hands[0]).toEqual([]);
     });
 
     test("emptying the hand ends the round immediately", () => {

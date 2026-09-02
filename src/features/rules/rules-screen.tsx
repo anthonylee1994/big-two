@@ -29,7 +29,7 @@ const SECTIONS: {title: string; icon: React.ReactNode; lines: string[]}[] = [
     {
         title: "香港特別規則",
         icon: <FaDragon />,
-        lines: ["一條龍：13 個點數齊全即勝。", "唔可以用單張 ♠2 埋齋。", "冇炸彈跨張數壓牌。"],
+        lines: ["一條龍：13 個點數齊全即勝。", "冇炸彈跨張數壓牌。"],
     },
     {
         title: "計分",

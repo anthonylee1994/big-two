@@ -1,6 +1,6 @@
 import {createDeck, DIAMOND_3_ID, nextSeat, sortCards} from "../domain/cards.ts";
 import type {ApplyResult, Card, DomainEvent, EngineErrorCode, GameAction, GameState, PlayerInit, Seat} from "../domain/types.ts";
-import {cardsFromIds, hasDragon, isLegalPlay, isSpadeTwoLastSingle, listLegalPlays, playContextFor, selectedPlay} from "./legal.ts";
+import {cardsFromIds, hasDragon, isLegalPlay, listLegalPlays, playContextFor, selectedPlay} from "./legal.ts";
 import {roundPenalties} from "./scoring.ts";
 import {shuffle} from "./shuffle.ts";
 
@@ -229,9 +229,6 @@ export function applyAction(state: GameState, action: GameAction): ApplyResult {
     const ctx = playContextFor(next, seat);
     if (ctx.mustIncludeDiamond3 && !combination.cards.some(card => card.id === DIAMOND_3_ID)) {
         return fail("mustIncludeDiamond3", "First play must include ♦3");
-    }
-    if (isSpadeTwoLastSingle(combination, ctx.handSize)) {
-        return fail("spadeTwoLastSingle", "Cannot finish with a single ♠2");
     }
     if (!isLegalPlay(combination, ctx)) {
         return fail("illegalPlay", "Play does not beat the last combination");
