@@ -24,16 +24,16 @@ export const ResultsScreen = React.memo(() => {
     const ranked = [...snapshot.players].sort((a, b) => snapshot.penalties[a.seat] - snapshot.penalties[b.seat]);
 
     const footer = (
-        <div className="flex gap-3 pb-3">
-            <Button size="lg" variant="ghost" icon={<FaHouse />} block onClick={() => leaveSession()}>
+        <div className="flex items-center gap-3 pb-3">
+            <Button size="lg" variant="ghost" icon={<FaHouse />} className="min-w-0 flex-1" onClick={() => leaveSession()}>
                 返回首頁
             </Button>
             {isHost ? (
-                <Button size="lg" variant="primary" icon={<LuRepeat />} block onClick={() => startNextRound()}>
+                <Button size="lg" variant="primary" icon={<LuRepeat />} className="min-w-0 flex-1" onClick={() => startNextRound()}>
                     下一局
                 </Button>
             ) : (
-                <p className="flex flex-1 items-center justify-center text-sm font-semibold text-white/45">等房主開下一局</p>
+                <p className="flex-none text-sm font-semibold whitespace-nowrap text-white/45">等房主開下一局</p>
             )}
         </div>
     );
