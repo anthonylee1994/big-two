@@ -1,0 +1,470 @@
+@import "tailwindcss";
+
+@theme {
+    /* 賭桌綠：由描邊深綠到鮮綠枱面 */
+    --color-felt-950: #0a2a1c;
+    --color-felt-900: #103d2a;
+    --color-felt-800: #175236;
+    --color-felt-700: #1e6a45;
+    --color-felt-600: #268557;
+    --color-felt-500: #2fa66b;
+    --color-felt-400: #4bc386;
+    --color-felt-300: #74dba6;
+
+    /* 金：主要 accent */
+    --color-gold-800: #8a5c11;
+    --color-gold-700: #b8791a;
+    --color-gold-600: #e09b1f;
+    --color-gold-500: #ffc93c;
+    --color-gold-400: #ffd76b;
+    --color-gold-300: #ffe79c;
+    --color-gold-200: #fff4cd;
+
+    /* 紅：紅心方塊、罰分 */
+    --color-cherry-700: #9e2020;
+    --color-cherry-600: #cc2f2f;
+    --color-cherry-500: #ff5a5f;
+    --color-cherry-400: #ff8a8d;
+
+    /* 藍：次要動作 */
+    --color-ocean-700: #1c5f9e;
+    --color-ocean-600: #2b7fd4;
+    --color-ocean-500: #3da9fc;
+    --color-ocean-400: #74c4ff;
+
+    /* 紫：裝飾 */
+    --color-berry-600: #7b3fc4;
+    --color-berry-500: #9b5de5;
+
+    --color-felt: #175236;
+    --color-gold: #ffc93c;
+
+    --font-sans: "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", ui-rounded, "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+
+    --shadow-chunky: 0 5px 0 var(--color-felt-950);
+    --shadow-chunky-sm: 0 3px 0 var(--color-felt-950);
+    --shadow-panel: 0 6px 0 var(--color-felt-950);
+    --shadow-card: 0 4px 0 rgb(10 42 28 / 0.4);
+    --shadow-lift: 0 10px 0 rgb(10 42 28 / 0.45);
+    --shadow-glow: 0 0 0 3px var(--color-gold-500), 0 0 0 6px var(--color-gold-700);
+
+    --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@layer base {
+    :root {
+        color-scheme: dark;
+    }
+
+    html,
+    body,
+    #root {
+        min-height: 100dvh;
+    }
+
+    body {
+        margin: 0;
+        color: #fff;
+        font-family: var(--font-sans);
+        font-weight: 500;
+        background-color: var(--color-felt-800);
+        background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.035) 0 14px, transparent 14px 28px);
+        background-attachment: fixed;
+        overscroll-behavior: none;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    select,
+    input,
+    textarea {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    button:disabled {
+        cursor: default;
+    }
+
+    :focus-visible {
+        outline: 3px solid var(--color-gold-500);
+        outline-offset: 3px;
+    }
+}
+
+@layer components {
+    /* ---------- safe area ---------- */
+
+    .safe-top {
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+
+    .safe-bottom {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .safe-x {
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+
+    /* ---------- surfaces：全部平面色 + 深綠描邊 ---------- */
+
+    .panel {
+        border-radius: 1.75rem;
+        border: 3px solid var(--color-felt-950);
+        background-color: var(--color-felt-900);
+        box-shadow: var(--shadow-panel);
+    }
+
+    .panel-inset {
+        border-radius: 1.25rem;
+        border: 3px solid var(--color-felt-950);
+        background-color: var(--color-felt-800);
+    }
+
+    .bar {
+        border-color: var(--color-felt-950);
+        background-color: var(--color-felt-900);
+    }
+
+    .felt {
+        border-radius: 2rem;
+        border: 4px solid var(--color-felt-950);
+        background-color: var(--color-felt-500);
+        box-shadow:
+            inset 0 6px 0 rgb(255 255 255 / 0.16),
+            inset 0 -8px 0 rgb(10 42 28 / 0.2),
+            0 8px 0 var(--color-felt-950);
+    }
+
+    /* ---------- chunky buttons：平面色 + 實色底邊 ---------- */
+
+    .btn {
+        position: relative;
+        border-width: 3px;
+        border-style: solid;
+        font-weight: 800;
+        transition:
+            transform 0.12s var(--ease-snap),
+            box-shadow 0.12s var(--ease-snap),
+            background-color 0.15s ease;
+    }
+
+    .btn:not(:disabled):active {
+        transform: translateY(5px);
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        border-color: var(--color-gold-800);
+        background-color: var(--color-gold-500);
+        color: var(--color-felt-950);
+        box-shadow: 0 5px 0 var(--color-gold-800);
+    }
+
+    .btn-primary:not(:disabled):hover {
+        background-color: var(--color-gold-400);
+    }
+
+    .btn-secondary {
+        border-color: var(--color-ocean-700);
+        background-color: var(--color-ocean-500);
+        color: #04202f;
+        box-shadow: 0 5px 0 var(--color-ocean-700);
+    }
+
+    .btn-secondary:not(:disabled):hover {
+        background-color: var(--color-ocean-400);
+    }
+
+    .btn-ghost {
+        border-color: var(--color-felt-950);
+        background-color: var(--color-felt-700);
+        color: #fff;
+        box-shadow: 0 5px 0 var(--color-felt-950);
+    }
+
+    .btn-ghost:not(:disabled):hover {
+        background-color: var(--color-felt-600);
+    }
+
+    .btn-danger {
+        border-color: var(--color-cherry-700);
+        background-color: var(--color-cherry-500);
+        color: #fff;
+        box-shadow: 0 5px 0 var(--color-cherry-700);
+    }
+
+    .btn-danger:not(:disabled):hover {
+        background-color: var(--color-cherry-400);
+    }
+
+    /* ---------- playing cards ---------- */
+
+    .card-xs {
+        --card-w: 1.9rem;
+    }
+
+    .card-sm {
+        --card-w: min(2.7rem, 9vh);
+    }
+
+    .card-md {
+        --card-w: min(3.4rem, 11vh);
+    }
+
+    .card-lg {
+        --card-w: min(clamp(3rem, 10vw, 4.6rem), 14vh);
+    }
+
+    .playing-card {
+        position: relative;
+        flex: none;
+        width: var(--card-w, 3.4rem);
+        aspect-ratio: 5 / 7;
+        border-radius: clamp(0.35rem, calc(var(--card-w, 3.4rem) * 0.18), 1rem);
+        border: 3px solid var(--color-felt-950);
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        transition:
+            transform 0.18s var(--ease-snap),
+            box-shadow 0.18s var(--ease-snap);
+    }
+
+    .playing-card-face {
+        background-color: #fffdf7;
+        box-shadow: var(--shadow-card);
+    }
+
+    .playing-card-back {
+        background-color: var(--color-felt-700);
+        background-image: repeating-linear-gradient(45deg, rgb(255 201 60 / 0.22) 0 2px, transparent 2px 10px);
+        box-shadow: var(--shadow-card);
+    }
+
+    .playing-card-rank {
+        font-size: calc(var(--card-w, 3.4rem) * 0.38);
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+    }
+
+    .playing-card-suit {
+        font-size: calc(var(--card-w, 3.4rem) * 0.3);
+        line-height: 1;
+    }
+
+    .playing-card-ghost {
+        font-size: calc(var(--card-w, 3.4rem) * 0.72);
+        line-height: 1;
+    }
+
+    .playing-card-mark {
+        font-size: calc(var(--card-w, 3.4rem) * 0.42);
+        line-height: 1;
+    }
+
+    .playing-card-selected {
+        transform: translateY(-0.9rem) rotate(-2deg);
+        box-shadow: var(--shadow-glow), var(--shadow-lift);
+    }
+
+    @media (hover: hover) {
+        .playing-card-interactive:hover:not(:disabled) {
+            transform: translateY(-0.5rem) rotate(-1deg);
+        }
+
+        .playing-card-interactive.playing-card-selected:hover:not(:disabled) {
+            transform: translateY(-1.1rem) rotate(-2deg);
+        }
+    }
+
+    /* ---------- hand fan ---------- */
+
+    .hand-fan {
+        --card-gap: 0.2rem;
+        --step: min(calc(var(--card-w) + var(--card-gap)), calc((100% - var(--card-w)) / max(calc(var(--card-count, 1) - 1), 1)));
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        padding: 1.2rem 0.6rem 0.35rem;
+    }
+
+    .hand-fan > * + * {
+        margin-left: calc(var(--step) - var(--card-w));
+    }
+
+    .card-stack {
+        display: flex;
+        justify-content: center;
+    }
+
+    .card-stack > * + * {
+        margin-left: calc(var(--card-w) * -0.42);
+    }
+
+    /* ---------- game table layout ---------- */
+
+    .table-area {
+        display: grid;
+        min-height: 0;
+        gap: 0.6rem;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-areas:
+            "opponents"
+            "center";
+    }
+
+    .seat-row {
+        grid-area: opponents;
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .seat-row > * {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .table-center {
+        grid-area: center;
+        align-self: stretch;
+        width: 100%;
+        min-height: 0;
+    }
+
+    @media (min-width: 768px) {
+        .table-area {
+            gap: 0.75rem 1.25rem;
+            grid-template-columns: minmax(6.5rem, 1fr) minmax(0, 2.4fr) minmax(6.5rem, 1fr);
+            grid-template-areas:
+                ".    top    ."
+                "left center right";
+        }
+
+        .seat-row {
+            display: contents;
+        }
+
+        .seat-slot-left {
+            grid-area: left;
+            align-self: center;
+        }
+
+        .seat-slot-top {
+            grid-area: top;
+            justify-self: center;
+            width: 100%;
+            max-width: 20rem;
+        }
+
+        .seat-slot-right {
+            grid-area: right;
+            align-self: center;
+        }
+    }
+}
+
+/* 細背牌淨返斜紋，唔要中央徽章（unlayered 先蓋得過 utilities） */
+
+.card-xs .playing-card-mark,
+.card-sm .playing-card-mark {
+    display: none;
+}
+
+/* ---------- 只支援直向：畫面太矮就整個蓋住 ---------- */
+
+.orientation-gate {
+    display: none;
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .orientation-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-felt-800);
+        background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.035) 0 14px, transparent 14px 28px);
+    }
+
+    /* 遮罩出現期間唔好畀底層 scroll */
+    body:has(.orientation-gate) {
+        overflow: hidden;
+    }
+}
+
+/* ---------- motion ---------- */
+
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.9rem) scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes pulse-ring {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgb(255 201 60 / 0.65);
+    }
+    50% {
+        box-shadow: 0 0 0 0.5rem rgb(255 201 60 / 0);
+    }
+}
+
+@keyframes bob {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-0.25rem);
+    }
+}
+
+@layer utilities {
+    .animate-rise {
+        animation: rise-in 0.32s var(--ease-snap) both;
+    }
+
+    .animate-turn {
+        animation: pulse-ring 1.8s ease-in-out infinite;
+    }
+
+    .animate-bob {
+        animation: bob 2.4s ease-in-out infinite;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+.motion-reduce *,
+.motion-reduce *::before,
+.motion-reduce *::after {
+    animation: none !important;
+    transition: none !important;
+}
