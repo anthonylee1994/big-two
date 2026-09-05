@@ -16,15 +16,14 @@ describe("GameRoom", () => {
         const started = room.handle("host", {type: "game.start", commandId: "s1", revision: room.revision, seed: "seed-room"});
         expect(room.game).not.toBeNull();
         expect(started.some(event => event.event.type === "game.snapshot")).toBe(true);
-        if (!room.game?.dragonWin) {
-            const snapshot = started.find(event => event.event.type === "game.snapshot" && event.to === "host");
-            expect(snapshot?.event.type).toBe("game.snapshot");
-            if (snapshot?.event.type === "game.snapshot") {
-                const foreign = room.game!.hands.flatMap((hand, seat) => (seat === 0 ? [] : hand.map(card => card.id)));
-                const json = JSON.stringify(snapshot.event.game);
-                for (const id of foreign) {
-                    expect(json).not.toContain(`"${id}"`);
-                }
+        expect(room.game?.phase).toBe("playing");
+        const snapshot = started.find(event => event.event.type === "game.snapshot" && event.to === "host");
+        expect(snapshot?.event.type).toBe("game.snapshot");
+        if (snapshot?.event.type === "game.snapshot") {
+            const foreign = room.game!.hands.flatMap((hand, seat) => (seat === 0 ? [] : hand.map(card => card.id)));
+            const json = JSON.stringify(snapshot.event.game);
+            for (const id of foreign) {
+                expect(json).not.toContain(`"${id}"`);
             }
         }
     });

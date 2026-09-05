@@ -1,5 +1,5 @@
 import React from "react";
-import {FaCrown, FaDragon, FaFlagCheckered} from "react-icons/fa6";
+import {FaCrown, FaFlagCheckered} from "react-icons/fa6";
 import {GiCardAceSpades, GiPokerHand, GiSnake} from "react-icons/gi";
 import {AppShell} from "../../components/app-shell.tsx";
 import {Panel, SectionTitle} from "../../components/ui/panel.tsx";
@@ -25,11 +25,6 @@ const SECTIONS: {title: string; icon: React.ReactNode; lines: string[]}[] = [
         title: "流程",
         icon: <FaFlagCheckered />,
         lines: ["持有 ♦3 先出，第一手必須含 ♦3。", "只可用相同張數更大牌型蓋牌，或者 Pass。", "三家連續 Pass 後，上一個出牌者取得牌權。"],
-    },
-    {
-        title: "香港特別規則",
-        icon: <FaDragon />,
-        lines: ["一條龍：13 個點數齊全即勝。", "冇炸彈跨張數壓牌。"],
     },
     {
         title: "計分",

@@ -51,7 +51,6 @@ export interface GameState {
     playLog: PlayLogEntry[];
     winnerSeat: Seat | null;
     penalties: number[];
-    dragonWin: boolean;
     revision: number;
     seed: string;
     processedCommandIds: string[];
@@ -81,7 +80,6 @@ export interface PublicGameState {
     playLog: PlayLogEntry[];
     winnerSeat: Seat | null;
     penalties: number[];
-    dragonWin: boolean;
     revision: number;
     remainingHands: Card[][] | null;
 }
@@ -102,7 +100,7 @@ export type DomainEvent =
     | {type: "played"; seat: Seat; combination: Combination}
     | {type: "passed"; seat: Seat}
     | {type: "trickEnded"; leadSeat: Seat}
-    | {type: "roundEnded"; winnerSeat: Seat; penalties: number[]; dragonWin: boolean}
-    | {type: "roundStarted"; round: number; currentPlayerSeat: Seat; dragonWin: boolean};
+    | {type: "roundEnded"; winnerSeat: Seat; penalties: number[]}
+    | {type: "roundStarted"; round: number; currentPlayerSeat: Seat};
 
 export type ApplyResult = {ok: true; state: GameState; events: DomainEvent[]} | {ok: false; error: EngineError};

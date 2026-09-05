@@ -6,9 +6,6 @@ import {TEST_PLAYERS} from "../test-helpers.ts";
 describe("public snapshot", () => {
     test("does not leak other players' remaining cards", () => {
         const state = createGame({players: TEST_PLAYERS, seed: "snap-1"});
-        if (state.dragonWin) {
-            return;
-        }
         for (const player of state.players) {
             const snapshot = toPublicSnapshot(state, player.id);
             const json = JSON.stringify(snapshot);

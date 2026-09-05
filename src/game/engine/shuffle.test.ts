@@ -16,7 +16,7 @@ describe("shuffle and deal", () => {
     test("deal gives four unique 13-card hands covering the deck", () => {
         const game = createGame({players: TEST_PLAYERS, seed: "deal-1"});
         const all = game.hands.flat().map(card => card.id);
-        expect(game.hands.every(hand => hand.length === 13 || game.dragonWin)).toBe(true);
+        expect(game.hands.every(hand => hand.length === 13)).toBe(true);
         expect(new Set(all).size).toBe(52);
         expect(all).toHaveLength(52);
     });

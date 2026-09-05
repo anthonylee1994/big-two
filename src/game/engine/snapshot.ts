@@ -32,7 +32,6 @@ export function toPublicSnapshot(state: GameState, viewerId: string): PublicGame
         })),
         winnerSeat: state.winnerSeat,
         penalties: [...state.penalties],
-        dragonWin: state.dragonWin,
         revision: state.revision,
         remainingHands: revealHands ? state.hands.map(hand => [...hand]) : null,
     };

@@ -1,6 +1,6 @@
 import {createDeck, DIAMOND_3_ID, nextSeat, sortCards} from "../domain/cards.ts";
 import type {ApplyResult, Card, DomainEvent, EngineErrorCode, GameAction, GameState, PlayerInit, Seat} from "../domain/types.ts";
-import {cardsFromIds, hasDragon, isLegalPlay, listLegalPlays, playContextFor, selectedPlay} from "./legal.ts";
+import {cardsFromIds, isLegalPlay, listLegalPlays, playContextFor, selectedPlay} from "./legal.ts";
 import {roundPenalties} from "./scoring.ts";
 import {shuffle} from "./shuffle.ts";
 
@@ -38,17 +38,6 @@ function findDiamond3Seat(hands: Card[][]): Seat {
     throw new Error("Deck is missing ♦3");
 }
 
-function findDragonWinner(hands: Card[][], startSeat: Seat): Seat | null {
-    let seat = startSeat;
-    for (let i = 0; i < 4; i += 1) {
-        if (hasDragon(hands[seat])) {
-            return seat;
-        }
-        seat = nextSeat(seat);
-    }
-    return null;
-}
-
 function dealHands(deck: Card[]): Card[][] {
     if (deck.length !== 52) {
         throw new Error("Deck must contain 52 cards");
@@ -60,7 +49,7 @@ function dealHands(deck: Card[]): Card[][] {
     return [sortCards(deck.slice(0, 13)), sortCards(deck.slice(13, 26)), sortCards(deck.slice(26, 39)), sortCards(deck.slice(39, 52))];
 }
 
-function finishRound(state: GameState, winnerSeat: Seat, dragonWin: boolean, events: DomainEvent[]): void {
+function finishRound(state: GameState, winnerSeat: Seat, events: DomainEvent[]): void {
     const penalties = roundPenalties(
         state.hands.map(hand => hand.length),
         winnerSeat
@@ -68,12 +57,11 @@ function finishRound(state: GameState, winnerSeat: Seat, dragonWin: boolean, eve
     state.phase = "roundEnded";
     state.winnerSeat = winnerSeat;
     state.penalties = penalties;
-    state.dragonWin = dragonWin;
     state.currentPlayerSeat = winnerSeat;
     for (let seat = 0; seat < 4; seat += 1) {
         state.players[seat].score += penalties[seat];
     }
-    events.push({type: "roundEnded", winnerSeat, penalties, dragonWin});
+    events.push({type: "roundEnded", winnerSeat, penalties});
 }
 
 function beginRound(state: GameState, seed: string, events: DomainEvent[]): void {
@@ -86,20 +74,12 @@ function beginRound(state: GameState, seed: string, events: DomainEvent[]): void
     state.consecutivePasses = 0;
     state.winnerSeat = null;
     state.penalties = [0, 0, 0, 0];
-    state.dragonWin = false;
     const startSeat = findDiamond3Seat(state.hands);
     state.leadSeat = startSeat;
     state.currentPlayerSeat = startSeat;
     state.mustIncludeDiamond3 = true;
-    const dragonSeat = findDragonWinner(state.hands, startSeat);
-    if (dragonSeat !== null) {
-        state.phase = "roundEnded";
-        finishRound(state, dragonSeat, true, events);
-        events.unshift({type: "roundStarted", round: state.round, currentPlayerSeat: startSeat, dragonWin: true});
-        return;
-    }
     state.phase = "playing";
-    events.push({type: "roundStarted", round: state.round, currentPlayerSeat: startSeat, dragonWin: false});
+    events.push({type: "roundStarted", round: state.round, currentPlayerSeat: startSeat});
 }
 
 export function createGame(params: {players: PlayerInit[]; seed: string; deck?: Card[]}): GameState {
@@ -127,7 +107,6 @@ export function createGame(params: {players: PlayerInit[]; seed: string; deck?: 
         playLog: [],
         winnerSeat: null,
         penalties: [0, 0, 0, 0],
-        dragonWin: false,
         revision: 1,
         seed: params.seed,
         processedCommandIds: [],
@@ -138,11 +117,6 @@ export function createGame(params: {players: PlayerInit[]; seed: string; deck?: 
         const startSeat = findDiamond3Seat(state.hands);
         state.leadSeat = startSeat;
         state.currentPlayerSeat = startSeat;
-        const events: DomainEvent[] = [];
-        const dragonSeat = findDragonWinner(state.hands, startSeat);
-        if (dragonSeat !== null) {
-            finishRound(state, dragonSeat, true, events);
-        }
         return state;
     }
     const events: DomainEvent[] = [];
@@ -244,7 +218,7 @@ export function applyAction(state: GameState, action: GameAction): ApplyResult {
     events.push({type: "played", seat, combination});
 
     if (next.hands[seat].length === 0) {
-        finishRound(next, seat, false, events);
+        finishRound(next, seat, events);
     } else {
         next.currentPlayerSeat = nextSeat(seat);
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import {FaDragon, FaHouse, FaRobot, FaTrophy} from "react-icons/fa6";
+import {FaHouse, FaRobot, FaTrophy} from "react-icons/fa6";
 import {LuRepeat} from "react-icons/lu";
 import {AppShell} from "../../components/app-shell.tsx";
 import {PlayingCard} from "../../components/playing-card.tsx";
@@ -43,9 +43,8 @@ export const ResultsScreen = React.memo(() => {
             <div className="space-y-6">
                 <Panel className="text-center">
                     <span className="border-felt-950 bg-gold-500 text-felt-950 animate-bob shadow-chunky mx-auto mb-3 flex size-18 items-center justify-center rounded-3xl border-3 text-3xl">
-                        {snapshot.dragonWin ? <FaDragon aria-hidden="true" /> : <FaTrophy aria-hidden="true" />}
+                        <FaTrophy aria-hidden="true" />
                     </span>
-                    {snapshot.dragonWin ? <p className="text-gold-500 text-xs font-black tracking-[0.35em] uppercase">一條龍</p> : null}
                     <p className="text-gold-500 mt-1 text-3xl font-black drop-shadow-[0_4px_0_var(--color-felt-950)] sm:text-4xl">{winner?.name ?? "玩家"} 勝出</p>
                     <p className="mt-2 text-sm font-semibold text-white/55">最先出清手牌</p>
                 </Panel>

@@ -2,7 +2,6 @@ import {describe, expect, test} from "vitest";
 import {createDeck, parseCardId, sortCards} from "../domain/cards.ts";
 import type {Card} from "../domain/types.ts";
 import {c, gameWithHands, pass, play, TEST_PLAYERS, tryPass, tryPlay} from "../test-helpers.ts";
-import {hasDragon} from "./legal.ts";
 import {applyAction, createGame, createGameFromHands} from "./reducer.ts";
 
 function takeFillCard(hand: Card[], remaining: Card[]): Card {
@@ -39,9 +38,6 @@ function handsWithControl(overrides: Partial<Record<number, string[]>>): ReturnT
             hands[seat].push(takeFillCard(hands[seat], remaining));
         }
         hands[seat] = sortCards(hands[seat]);
-    }
-    if (hands.some(hand => hasDragon(hand))) {
-        throw new Error("Could not break accidental dragon");
     }
     return gameWithHands(hands);
 }
@@ -120,20 +116,54 @@ describe("opening and turns", () => {
     });
 });
 
-describe("special rules", () => {
-    test("dragon wins immediately", () => {
+describe("round completion", () => {
+    test("dealing all 13 ranks does not end the initial or next round", () => {
+        const seed = "all-ranks-28";
+        const state = createGame({players: TEST_PLAYERS, seed});
+        expect(state.hands.some(hand => new Set(hand.map(card => card.rank)).size === 13)).toBe(true);
+        expect(state.phase).toBe("playing");
+        expect(state.winnerSeat).toBeNull();
+
+        const result = applyAction(
+            {...state, phase: "roundEnded", winnerSeat: 0},
+            {
+                type: "startRound",
+                playerId: TEST_PLAYERS[0].id,
+                commandId: "next-round",
+                revision: state.revision,
+                seed,
+            }
+        );
+        expect(result.ok).toBe(true);
+        if (!result.ok) {
+            throw new Error(result.error.message);
+        }
+        expect(result.state.hands).toEqual(state.hands);
+        expect(result.state.phase).toBe("playing");
+        expect(result.state.winnerSeat).toBeNull();
+        expect(result.state.mustIncludeDiamond3).toBe(true);
+        expect(result.state.players.map(player => player.score)).toEqual([0, 0, 0, 0]);
+        expect(result.events).toEqual([{type: "roundStarted", round: 2, currentPlayerSeat: state.currentPlayerSeat}]);
+    });
+
+    test("holding all 13 ranks still requires normal play", () => {
         const ranks = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"] as const;
         const dragon = ranks.map((rank, i) => parseCardId(`${["D", "C", "H", "S"][i % 4]}${rank}`));
-        expect(hasDragon(dragon)).toBe(true);
         const rest = createDeck().filter(card => !dragon.some(item => item.id === card.id));
         const state = createGameFromHands({
             players: TEST_PLAYERS,
             hands: [sortCards(dragon), sortCards(rest.slice(0, 13)), sortCards(rest.slice(13, 26)), sortCards(rest.slice(26, 39))],
         });
-        expect(state.phase).toBe("roundEnded");
-        expect(state.dragonWin).toBe(true);
-        expect(state.winnerSeat).toBe(0);
-        expect(state.players.map(player => player.score)).toEqual([0, 39, 39, 39]);
+        expect(state.phase).toBe("playing");
+        expect(state.winnerSeat).toBeNull();
+        expect(state.currentPlayerSeat).toBe(0);
+        expect(state.mustIncludeDiamond3).toBe(true);
+        expect(state.penalties).toEqual([0, 0, 0, 0]);
+        expect(state.players.map(player => player.score)).toEqual([0, 0, 0, 0]);
+        expect(tryPlay(state, 0, ["C4"]).ok).toBe(false);
+        const opened = play(state, 0, ["D3"]);
+        expect(opened.phase).toBe("playing");
+        expect(opened.hands[0]).toHaveLength(12);
     });
 
     test("can finish with a single spade 2", () => {
@@ -186,9 +216,6 @@ describe("special rules", () => {
 describe("engine guards", () => {
     test("rejects stale revision and duplicate commands", () => {
         const state = createGame({players: TEST_PLAYERS, seed: "guard-1"});
-        if (state.dragonWin) {
-            return;
-        }
         const seat = state.currentPlayerSeat;
         const d3 = state.hands[seat].find(card => card.id === "D3")!;
         const action = {
@@ -214,9 +241,6 @@ describe("engine guards", () => {
 
     test("rejects the wrong player", () => {
         const state = createGame({players: TEST_PLAYERS, seed: "guard-2"});
-        if (state.dragonWin) {
-            return;
-        }
         const other = (state.currentPlayerSeat + 1) % 4;
         const result = tryPass(state, other);
         expect(result.ok).toBe(false);

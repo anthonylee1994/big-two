@@ -7,11 +7,6 @@ export interface PlayContext {
     mustIncludeDiamond3: boolean;
 }
 
-export function hasDragon(hand: Card[]): boolean {
-    const ranks = new Set(hand.map(card => card.rank));
-    return hand.length === 13 && ranks.size === 13;
-}
-
 export function cardsFromIds(hand: Card[], cardIds: string[]): Card[] | null {
     if (new Set(cardIds).size !== cardIds.length) {
         return null;
