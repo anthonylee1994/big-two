@@ -102,7 +102,7 @@ export const GameScreen = React.memo(() => {
     };
 
     return (
-        <div className="flex h-dvh w-full overflow-hidden">
+        <div className="flex h-dvh w-full overflow-x-hidden overflow-y-auto md:overflow-hidden">
             <div className="safe-x mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col">
                 <header className="safe-top flex flex-none items-center gap-2 pb-2">
                     <div className="min-w-0 flex-1">
@@ -121,7 +121,7 @@ export const GameScreen = React.memo(() => {
                     <p className="border-felt-950 bg-gold-500 text-felt-950 mb-2 flex-none rounded-2xl border-3 px-3 py-2 text-center text-sm font-black">斷線重連緊，出牌尚未確認。</p>
                 ) : null}
 
-                <div className="table-area min-h-0 flex-1">
+                <div className="table-area min-h-84 flex-1 md:min-h-0">
                     <div className="seat-row">
                         <SeatPanel slot="left" player={bySeat(relative(3))} active={snapshot.currentPlayerSeat === relative(3)} passed={lastPassSeats.has(relative(3))} />
                         <SeatPanel slot="top" player={bySeat(relative(2))} active={snapshot.currentPlayerSeat === relative(2)} passed={lastPassSeats.has(relative(2))} />
