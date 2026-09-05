@@ -1,6 +1,6 @@
 import React from "react";
 import {FaForward, FaPlay} from "react-icons/fa6";
-import {LuArrowUpDown, LuKeyboard, LuLogOut, LuScrollText, LuX} from "react-icons/lu";
+import {LuArrowUpDown, LuKeyboard, LuLogOut, LuScrollText, LuSparkles, LuX} from "react-icons/lu";
 import {HandFan} from "../../components/game/hand-fan.tsx";
 import {SeatPanel} from "../../components/game/seat-panel.tsx";
 import {TableCenter} from "../../components/game/table-center.tsx";
@@ -28,12 +28,14 @@ export const GameScreen = React.memo(() => {
     const snapshot = useGameStore(state => state.snapshot);
     const selectedIds = useGameStore(state => state.selectedIds);
     const toggleCard = useGameStore(state => state.toggleCard);
+    const setSelection = useGameStore(state => state.setSelection);
     const clearSelection = useGameStore(state => state.clearSelection);
     const pending = useGameStore(state => state.pendingCommandId);
     const lastError = useGameStore(state => state.lastError);
     const handSort = usePreferencesStore(state => state.handSort);
     const setHandSort = usePreferencesStore(state => state.setHandSort);
     const status = useConnectionStore(state => state.status);
+    const [quickOpen, setQuickOpen] = React.useState(false);
 
     React.useEffect(() => {
         const onKey = (event: KeyboardEvent) => {
@@ -86,7 +88,25 @@ export const GameScreen = React.memo(() => {
     };
     const legal = Boolean(combination && isLegalPlay(combination, playContext));
     const hasAnyLegal = listLegalPlays(snapshot.ownHand, playContext).length > 0;
+    const legalPlays = myTurn ? listLegalPlays(snapshot.ownHand, playContext) : [];
     const canPass = myTurn && (snapshot.lastPlay !== null || !hasAnyLegal);
+
+    const quickPlays = (() => {
+        const order = ["single", "pair", "triple", "straight", "flush", "fullHouse", "fourOfAKind", "straightFlush"] as const;
+        return order.map(kind => ({kind, plays: legalPlays.filter(play => play.kind === kind)})).filter(group => group.plays.length > 0);
+    })();
+
+    const chooseQuickPlay = (kind: (typeof quickPlays)[number]["kind"]) => {
+        const plays = quickPlays.find(group => group.kind === kind)?.plays ?? [];
+        if (plays.length === 0) {
+            return;
+        }
+        const currentKey = selectedIds.join(",");
+        const currentIndex = plays.findIndex(play => play.cards.map(card => card.id).join(",") === currentKey);
+        const next = plays[(currentIndex + 1) % plays.length];
+        setSelection(next.cards.map(card => card.id));
+        setQuickOpen(false);
+    };
 
     const turnLabel = myTurn ? "輪到你出牌" : `輪到 ${bySeat(snapshot.currentPlayerSeat).name}`;
     const hintLabel = snapshot.mustIncludeDiamond3 ? "開局，必須含 ♦3" : "自由出牌，任意牌型";
@@ -111,6 +131,7 @@ export const GameScreen = React.memo(() => {
                             手牌 {snapshot.ownHand.length} 張 · 累積 {me.score} 分
                         </p>
                     </div>
+                    {myTurn && quickPlays.length > 0 ? <Button size="sm" variant="ghost" icon={<LuSparkles />} ariaLabel="快捷揀牌" onClick={() => setQuickOpen(true)} /> : null}
                     <Button size="sm" variant="ghost" icon={<LuArrowUpDown />} onClick={() => setHandSort(handSort === "rank" ? "suit" : "rank")} title="切換手牌排序">
                         {handSort === "rank" ? "點數" : "花色"}
                     </Button>
@@ -121,7 +142,7 @@ export const GameScreen = React.memo(() => {
                     <p className="border-felt-950 bg-gold-500 text-felt-950 mb-2 flex-none rounded-2xl border-3 px-3 py-2 text-center text-sm font-black">斷線重連緊，出牌尚未確認。</p>
                 ) : null}
 
-                <div className="table-area min-h-84 flex-1 md:min-h-0">
+                <div className="table-area min-h-0 flex-1 md:min-h-0">
                     <div className="seat-row">
                         <SeatPanel slot="left" player={bySeat(relative(3))} active={snapshot.currentPlayerSeat === relative(3)} passed={lastPassSeats.has(relative(3))} />
                         <SeatPanel slot="top" player={bySeat(relative(2))} active={snapshot.currentPlayerSeat === relative(2)} passed={lastPassSeats.has(relative(2))} />
@@ -147,6 +168,29 @@ export const GameScreen = React.memo(() => {
                     </div>
                 </div>
             </div>
+
+            {quickOpen && myTurn ? (
+                <div className="quick-play-drawer fixed inset-0 z-100 flex items-start justify-center" role="dialog" aria-modal="true" aria-label="快捷揀牌">
+                    <button className="quick-play-backdrop absolute inset-0" aria-label="關閉快捷揀牌" onClick={() => setQuickOpen(false)} />
+                    <div className="quick-play-dialog panel relative w-full max-w-xl rounded-t-none p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+                        <div className="mb-3 flex items-center justify-between">
+                            <h2 className="flex items-center gap-2 text-base font-black text-white">
+                                <LuSparkles />
+                                快捷揀牌
+                            </h2>
+                            <Button size="sm" variant="ghost" icon={<LuX />} ariaLabel="關閉" onClick={() => setQuickOpen(false)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                            {quickPlays.map(group => (
+                                <Button key={group.kind} size="sm" variant={combination?.kind === group.kind ? "secondary" : "ghost"} onClick={() => chooseQuickPlay(group.kind)}>
+                                    {KIND_NAMES[group.kind]}
+                                    {group.plays.length > 1 ? <span className="quick-play-count">{group.plays.length}</span> : null}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
 
             <aside className="bar hidden w-72 flex-none flex-col gap-5 border-l-4 p-5 text-sm lg:flex">
                 <div className="min-h-0 flex-1 overflow-y-auto">

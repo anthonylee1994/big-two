@@ -8,6 +8,7 @@ export interface GameStoreState {
     lastError: string | null;
     setSnapshot: (snapshot: PublicGameState | null) => void;
     toggleCard: (cardId: string) => void;
+    setSelection: (cardIds: string[]) => void;
     clearSelection: () => void;
     setPending: (commandId: string | null) => void;
     setError: (error: string | null) => void;
@@ -33,6 +34,7 @@ const gameStore = create<GameStoreState>(set => ({
             }
             return {selectedIds: [...state.selectedIds, cardId]};
         }),
+    setSelection: selectedIds => set({selectedIds}),
     clearSelection: () => set({selectedIds: []}),
     setPending: pendingCommandId => set({pendingCommandId}),
     setError: lastError => set({lastError}),
